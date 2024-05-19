@@ -11,7 +11,8 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "outDir": "dist"
+    "outDir": "dist",
+    "esModuleInterop": true
   },
   "include": ["src"]
 }

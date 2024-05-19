@@ -1,24 +1,37 @@
-const infoDivs = document.querySelectorAll('[data-cwopen="[info]"]');
+import { addPreviewButton } from "./previewButton";
+import { convertMarkupToHTML } from "./convertMarkup";
 
-infoDivs.forEach((div) => {
-  const spanTags = div.querySelectorAll("span");
-  console.log("run");
+async function convertInfoDivs() {
+  const infoDivs = document.querySelectorAll('[data-cwopen="[info]"]');
 
-  spanTags.forEach((span) => {
-    const text = span.innerText;
-    const convertedHTML = convertMarkupToHTML(text);
+  for (const div of infoDivs) {
+    const spanTags = div.querySelectorAll("span");
 
-    span.innerHTML = convertedHTML;
+    for (const span of spanTags) {
+      const text = span.innerText;
+      const convertedHTML = await convertMarkupToHTML(text);
+
+      span.innerHTML = convertedHTML;
+    }
+  }
+}
+
+const observer = new MutationObserver((mutations) => {
+  mutations.forEach((mutation) => {
+    if (mutation.type === "childList" && mutation.addedNodes.length > 0) {
+      requestAnimationFrame(addPreviewButton);
+    }
   });
 });
 
-function convertMarkupToHTML(markup: string): string {
-  const converth1 = markup.replace(/#\s*(.*)/g, "<h1>$1</h1>");
-  const converth2 = markup.replace(/##\s*(.*)/g, "<h2>$1</h2>");
-  const converth3 = markup.replace(/###\s*(.*)/g, "<h3>$1</h3>");
-  const converth4 = markup.replace(/####\s*(.*)/g, "<h4>$1</h4>");
-  const converth5 = markup.replace(/#####\s*(.*)/g, "<h5>$1</h5>");
-  const converth6 = markup.replace(/######\s*(.*)/g, "<h6>$1</h6>");
+const config = { childList: true, subtree: true };
 
-  return converth1 + converth2 + converth3 + converth4 + converth5 + converth6;
+const headElement = document.querySelector("head");
+if (headElement) {
+  observer.observe(headElement, config);
 }
+
+window.addEventListener("load", () => {
+  addPreviewButton();
+  convertInfoDivs();
+});

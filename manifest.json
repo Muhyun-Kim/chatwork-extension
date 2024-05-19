@@ -1,11 +1,19 @@
 {
   "manifest_version": 3,
-  "name": "ChatWork Extension",
-  "version": "1.0",
+  "name": "chatwork-md-tool",
+  "description": "チャットワークの[info]と一緒にmarkdownを使うことができます。",
+  "version": "1.0.0",
+  "author": "Muhyun-Kim",
+  "permissions": ["activeTab"],
   "content_scripts": [
     {
       "matches": ["https://www.chatwork.com/*"],
       "js": ["content-script.js"]
     }
-  ]
+  ],
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
 }
