@@ -19,7 +19,10 @@ async function convertInfoDivs() {
 const observer = new MutationObserver((mutations) => {
   mutations.forEach((mutation) => {
     if (mutation.type === "childList" && mutation.addedNodes.length > 0) {
-      requestAnimationFrame(addPreviewButton);
+      requestAnimationFrame(() => {
+        addPreviewButton();
+        convertInfoDivs();
+      });
     }
   });
 });
@@ -32,6 +35,7 @@ if (headElement) {
 }
 
 window.addEventListener("load", () => {
+  console.log("Content script loaded");
   addPreviewButton();
   convertInfoDivs();
 });
