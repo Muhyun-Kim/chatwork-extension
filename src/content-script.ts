@@ -17,25 +17,61 @@ async function convertInfoDivs() {
 }
 
 const observer = new MutationObserver((mutations) => {
+  let handled = false;
+
   mutations.forEach((mutation) => {
-    if (mutation.type === "childList" && mutation.addedNodes.length > 0) {
+    if (
+      (!handled && mutation.type === "characterData") ||
+      mutation.type === "childList"
+    ) {
+      const target = mutation.target as HTMLElement;
+      if (
+        target &&
+        target.parentElement?.classList.contains("chatRoomHeader__roomTitle")
+      ) {
+        handled = true;
+        requestAnimationFrame(() => {
+          convertInfoDivs();
+        });
+      }
+    }
+  });
+});
+
+const headObserver = new MutationObserver((mutations) => {
+  let handled = false;
+  mutations.forEach((mutation) => {
+    if (!handled && mutation.type === "childList") {
       requestAnimationFrame(() => {
         addPreviewButton();
-        convertInfoDivs();
+        handled = true;
       });
     }
   });
 });
 
-const config = { childList: true, subtree: true };
+const config = { characterData: true, subtree: true };
+
+const roomTitleText = document.querySelector("#_roomTitle h1 span");
 
 const headElement = document.querySelector("head");
-if (headElement) {
-  observer.observe(headElement, config);
-}
+
+// 処理開始
 
 window.addEventListener("load", () => {
-  console.log("Content script loaded");
   addPreviewButton();
   convertInfoDivs();
+  const roomTitleSpan = document.querySelector("#_roomTitle h1 span");
+  if (roomTitleSpan) {
+    observer.observe(roomTitleSpan, config);
+  } else {
+  }
 });
+
+if (roomTitleText) {
+  observer.observe(roomTitleText, config);
+}
+
+if (headElement) {
+  headObserver.observe(headElement, { childList: true, subtree: true });
+}
